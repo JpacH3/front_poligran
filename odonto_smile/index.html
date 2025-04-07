@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OdontoSmile - Clínica Odontológica</title>
+    <style>
+        /* Reset y estilos generales */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        body {
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        /* Header y navegación */
+        header {
+            background-color: #f8f9fa;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+        
+        nav ul li {
+            margin-left: 2rem;
+        }
+        
+        nav ul li a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+        }
+        
+        /* Hero section */
+        .hero {
+            background-color: #e9f5ff;
+            padding: 4rem 2rem;
+            text-align: center;
+        }
+        
+        .hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            color: #0056b3;
+        }
+        
+        .hero p {
+            max-width: 800px;
+            margin: 0 auto 2rem;
+            font-size: 1.1rem;
+        }
+        
+        .btn {
+            display: inline-block;
+            background-color: #0056b3;
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        
+        .btn:hover {
+            background-color: #003d7a;
+        }
+        
+        /* Sección de sedes */
+        .sedes {
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+        
+        .sedes h2 {
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            color: #0056b3;
+        }
+        
+        .sedes-container {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .sede {
+            background-color: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            width: 250px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        /* Sección de tratamientos */
+        .tratamientos {
+            padding: 3rem 2rem;
+            background-color: #f5f5f5;
+        }
+        
+        .tratamientos h2 {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            color: #0056b3;
+        }
+        
+        .tratamientos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        
+        .tratamiento-card {
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .tratamiento-card h3 {
+            color: #0056b3;
+            margin-bottom: 1rem;
+        }
+        
+        /* Testimonio */
+        .testimonio {
+            padding: 3rem 2rem;
+            text-align: center;
+            background-color: #e9f5ff;
+        }
+        
+        .testimonio blockquote {
+            max-width: 800px;
+            margin: 0 auto;
+            font-style: italic;
+            font-size: 1.2rem;
+        }
+        
+        .testimonio p {
+            margin-top: 1rem;
+            font-weight: bold;
+        }
+        
+        /* Contacto */
+        .contacto {
+            padding: 3rem 2rem;
+            background-color: #0056b3;
+            color: white;
+            text-align: center;
+        }
+        
+        .contacto h2 {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .telefono {
+            font-size: 1.5rem;
+            margin: 1rem 0;
+        }
+        
+        /* Footer */
+        footer {
+            background-color: #333;
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+        
+        .footer-info {
+            margin-bottom: 1.5rem;
+        }
+        
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .footer-links a {
+            color: white;
+            text-decoration: none;
+        }
+        
+        /* Espacios para imágenes */
+        .image-placeholder {
+            background-color: #ddd;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 1rem 0;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>OdontoSmile</h1>
+        <nav>
+            <ul>
+                <li><a href="#">Inicio</a></li>
+                <li><a href="#">Tratamientos</a></li>
+                <li><a href="#">Contacto</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <section class="hero">
+        <h1>Bienvenido a OdontoSmile</h1>
+        <p>Donde cuidamos tu sonrisa con atención profesional y tecnología avanzada. Ofrecemos servicios de ortodoncia, valoraciones y más. Gestiona tus días fácilmente a través de nuestra plataforma y recibe la mejor atención para tu salud dental.</p>
+        <p>Agenda tu día con nosotros y déjanos cuidar de tu sonrisa. ¡Tu bienestar dental está en las mejores manos!</p>
+        <img src="img/portada.jpeg" alt="OdontoSmile" style="width: 100%; max-width: 600px; border-radius: 8px; margin-top: 1rem;">
+        <br>
+        <a href="#" class="btn">Agendar cita</a>        
+    </section>
+    <section class="sedes">
+        <h2>Nuestras Sedes</h2>
+        <div class="sedes-container">
+            <div class="sede">
+                <h3>Bello, Antioquia</h3>
+                <div class="image-placeholder"><img src="img/sede1.jpeg" alt="Sede1" style="width: 100%; max-width: 600px; border-radius: 8px; margin-top: 1rem;"></div>
+            </div>
+            <div class="sede">
+                <h3>Poblado, Antioquia</h3>
+                <div class="image-placeholder"><img src="img/sede2.jpeg" alt="Sede2" style="width: 100%; max-width: 600px; border-radius: 8px; margin-top: 1rem;"></div>
+            </div>
+            <div class="sede">
+                <h3>Laureles, Antioquia</h3>
+                <div class="image-placeholder"><img src="img/sede3.jpeg" alt="Sede3" style="width: 100%; max-width: 600px; border-radius: 8px; margin-top: 1rem;"></div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="tratamientos">
+        <h2>Tratamientos Dentales</h2>
+        <div class="tratamientos-grid">
+            <div class="tratamiento-card">
+                <h3>Gratúmenes con Benachés</h3>
+                <p>Cumple su atención de los clientes con tratamientos ¿Tienen una gran mayoría de nuestros clientes? ¡Ofrecemos servicios de ortodoncia, valoraciones y más más fácilmente a través de nuestra plataforma y desarrollo de los mejores manos! La verdad es que sigue con herramientas para gestionar las mejores instaladas.</p>
+            </div>
+            
+            <div class="tratamiento-card">
+                <h3>Lenguera y Productos</h3>
+                <p>Últimos e incluso y sus personas hicieron para realizar un riesgo y su familia. Las familias dejaron participar en el desarrollo de los mejores gestiarios y su personalización, además de mejorar el análisis y su auditoría con los clientes.</p>
+            </div>
+            
+            <div class="tratamiento-card">
+                <h3>Encuentro de Dental</h3>
+                <p>A pesar de los días del mismo con nuestros tratamientos, todas las necesidades para realizar los mejores informes de la ventaja y la información, garantizando por procedimiento seguro y objetivo.</p>
+            </div>
+            
+            <div class="tratamiento-card">
+                <h3>Implantas Dentales</h3>
+                <p>Recogerse la burocarrilidad y verídica de la carrera para mejorar los clientes con datos adicional. Este camino estará acompañado mediante el comprador y los beneficios para mejorar los clientes y controlar ganas científicas y evaluar este artículo completo.</p>
+            </div>
+            
+            <div class="tratamiento-card">
+                <h3>Volumenes Odontológicos</h3>
+                <p>Resultamos despidéndose completas para circular su nombre de datos de uso y/o acceso a los necesarios distintos. Cuando se utiliza, se destaca una competencia, mientras esperaba que aquellos serán otros tratamientos están emitidos a la salud dental.</p>
+            </div>
+            
+            <div class="tratamiento-card">
+                <h3>Ortodoncia trumbla</h3>
+                <p>Dichas dos componentes estudiosan los derechos con obturaciones transgresivas. Esta representa, clínicas de problemas proporcionales, o en elaboración entre la persona o las técnicas que actúan al usuario. Muchos podríamos buscar una capacidad laborativa pública.</p>
+            </div>
+        </div>
+    </section>
+    
+    <section class="testimonio">
+        <h2>Lo que dicen nuestros pacientes</h2>
+        <div style="display: flex; justify-content: center; margin: 1rem 0;">
+            <img src="img/paciente_portada.jpeg" alt="Paciente" style="width: 100%; max-width: 600px; border-radius: 8px;">
+        </div>
+        <blockquote>"Siempre tuve miedo al dentista, pero aquí la experiencia fue increíble. El personal es amable y muy atento. Volveré sin duda."</blockquote>
+        <p>Laura Pérez</p>
+    </section>
+    
+    <section class="contacto">
+        <h2>Contacto</h2>
+        <p>OdontoSmile Clínica de odontología</p>
+        <p>Bogota Colombia</p>
+        <p>Cuadernos tu sonrisa con atención especializada y tecnología avanzada. Vivirámos en nuestras sedes y agendas tu día hoy.</p>
+        <div class="telefono">LLÁMANOS: 018000123456</div>
+    </section>
+    
+    <footer>
+        <div class="footer-info">
+            <p>OdontoSmile © 2025 - Todos los derechos reservados</p>
+        </div>
+        <div class="footer-links">
+            <a href="#">Edición</a>
+            <a href="#">Tutarizmusa</a>
+            <a href="#">Benchús</a>
+            <a href="#">Contardo</a>
+        </div>
+    </footer>
+    
+    <!-- Mínimo JavaScript solo para funcionalidad básica -->
+    <script>
+        // Solo para el botón de agenda (simulación)
+        document.querySelector('.btn').addEventListener('click', function(e) {
+            e.preventDefault();
+            alert('Serás redirigido al sistema de agendamiento');
+            // Aquí iría la redirección real
+            // window.location.href = "agendar.html";
+        });
+    </script>
+</body>
+</html>
