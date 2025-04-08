@@ -1,17 +1,22 @@
-/* Reset y estilos generales */
+/* ================================
+   Reset y estilos base
+================================= */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Arial', sans-serif;
+    font-family: 'Arial', sans-serif; /* Fuente base del sitio */
 }
 
 body {
     color: #333;
-    line-height: 1.6;
+    line-height: 1.6; /* Mejor legibilidad */
 }
 
-/* Header y navegación */
+
+/* ================================
+   Header y navegación principal
+================================= */
 header {
     background-color: #f8f9fa;
     padding: 1rem 2rem;
@@ -36,7 +41,10 @@ nav ul li a {
     font-weight: 500;
 }
 
-/* Hero section */
+
+/* ================================
+   Sección principal (Hero)
+================================= */
 .hero {
     background-color: #e9f5ff;
     padding: 4rem 2rem;
@@ -55,6 +63,10 @@ nav ul li a {
     font-size: 1.1rem;
 }
 
+
+/* ================================
+   Botones reutilizables
+================================= */
 .btn {
     display: inline-block;
     background-color: #0056b3;
@@ -70,7 +82,10 @@ nav ul li a {
     background-color: #003d7a;
 }
 
-/* Sección de sedes */
+
+/* ================================
+   Sección de sedes
+================================= */
 .sedes {
     padding: 3rem 2rem;
     text-align: center;
@@ -97,7 +112,10 @@ nav ul li a {
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
-/* Sección de tratamientos */
+
+/* ================================
+   Sección de tratamientos
+================================= */
 .tratamientos {
     padding: 3rem 2rem;
     background-color: #f5f5f5;
@@ -128,7 +146,10 @@ nav ul li a {
     margin-bottom: 1rem;
 }
 
-/* Testimonio */
+
+/* ================================
+   Sección de testimonio
+================================= */
 .testimonio {
     padding: 3rem 2rem;
     text-align: center;
@@ -147,7 +168,10 @@ nav ul li a {
     font-weight: bold;
 }
 
-/* Contacto */
+
+/* ================================
+   Sección de contacto
+================================= */
 .contacto {
     padding: 3rem 2rem;
     background-color: #0056b3;
@@ -165,7 +189,10 @@ nav ul li a {
     margin: 1rem 0;
 }
 
-/* Footer */
+
+/* ================================
+   Footer (pie de página)
+================================= */
 footer {
     background-color: #333;
     color: white;
@@ -189,7 +216,10 @@ footer {
     text-decoration: none;
 }
 
-/* Estilos para imágenes */
+
+/* ================================
+   Estilos para imágenes
+================================= */
 .image-placeholder {
     background-color: #ddd;
     height: 200px;
@@ -200,7 +230,6 @@ footer {
     color: #666;
 }
 
-/* Estilos para imágenes reales */
 img {
     max-width: 100%;
     height: auto;
@@ -230,7 +259,10 @@ img {
     border: 4px solid #0056b3;
 }
 
-/* Clases para centrado */
+
+/* ================================
+   Utilidades para centrado
+================================= */
 .image-container {
     display: flex;
     justify-content: center;
