@@ -3,27 +3,16 @@ import os
 from werkzeug.security import generate_password_hash, check_password_hash
 
 def get_db_path():
-    """Obtiene la ruta absoluta y garantiza que el directorio exista"""
-    # Ruta absoluta al directorio del archivo db.py
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    db_dir = os.path.join(base_dir, 'database')  # Subdirectorio para la BD
-    os.makedirs(db_dir, exist_ok=True)  # Crea el directorio si no existe
-    return os.path.join(db_dir, 'usuarios.db')
+    # Para Render usa /var/lib/render/instance/
+    instance_path = os.path.join(os.getcwd(), 'instance')
+    os.makedirs(instance_path, exist_ok=True)
+    return os.path.join(instance_path, 'usuarios.db')
 
 def get_db_connection():
-    """Establece conexión a la base de datos con verificación de errores"""
-    db_path = get_db_path()
-    print(f"🔌 Conectando a base de datos en: {db_path}")
-    
-    try:
-        conn = sqlite3.connect(db_path)
-        conn.row_factory = sqlite3.Row
-        # Activar claves foráneas
-        conn.execute("PRAGMA foreign_keys = ON")
-        return conn
-    except sqlite3.Error as e:
-        print(f"❌ Error de conexión SQLite: {str(e)}")
-        raise
+    conn = sqlite3.connect(get_db_path())
+    conn.row_factory = sqlite3.Row
+    conn.execute("PRAGMA foreign_keys = ON")
+    return conn
 
 def crear_base_de_datos():
     """Crea la estructura inicial de la base de datos"""
