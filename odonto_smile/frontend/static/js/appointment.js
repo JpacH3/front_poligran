@@ -1,112 +1,114 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Simulación de base de datos en localStorage
-    if(!localStorage.getItem('citas')) {
-        localStorage.setItem('citas', JSON.stringify([]));
-    }
-
-    // Cargar citas existentes
-    loadAppointments();
-
+    // Cargar citas al abrir la página
+    cargarCitas();
+    
     // Manejar envío del formulario
-    document.getElementById('appointment-form').addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        // Obtener datos del formulario
-        const appointment = {
-            nombres: document.getElementById('nombres').value,
-            apellidos: document.getElementById('apellidos').value,
-            email: document.getElementById('email').value,
-            telefono: document.getElementById('telefono').value,
-            tratamiento: document.getElementById('tratamiento').value,
-            sede: document.getElementById('sede').value,
-            fecha: document.getElementById('fecha').value,
-            hora: document.getElementById('hora').value,
-            tipoPaciente: document.getElementById('tipo-paciente').value,
-            edad: document.getElementById('edad').value,
-            timestamp: new Date().getTime()
-        };
-
-        // Guardar en la "base de datos" (localStorage)
-        const citas = JSON.parse(localStorage.getItem('citas'));
-        citas.push(appointment);
-        localStorage.setItem('citas', JSON.stringify(citas));
-
-        // Mostrar mensaje y recargar lista
-        alert('Cita agendada exitosamente');
-        this.reset();
-        loadAppointments();
-    });
-
-    // Manejar cierre de sesión
-    document.getElementById('logout-btn').addEventListener('click', function() {
-        // Aquí normalmente se limpiaría la sesión del usuario
-        // Redirigir a login
-        window.location.href = "login.html";
-    });
-
-    // Función para cargar citas
-    function loadAppointments() {
-        const citas = JSON.parse(localStorage.getItem('citas'));
-        const listContainer = document.getElementById('appointments-list');
-        listContainer.innerHTML = '';
-
-        if(citas.length === 0) {
-            listContainer.innerHTML = '<p>No hay citas programadas</p>';
-            return;
-        }
-
-        citas.forEach(cita => {
-            const citaElement = document.createElement('div');
-            citaElement.className = 'appointment-item';
-            citaElement.innerHTML = `
-                <p><strong>Fecha:</strong> ${formatDate(cita.fecha)}</p>
-                <p><strong>Hora:</strong> ${cita.hora}</p>
-                <p><strong>Tratamiento:</strong> ${getTreatmentName(cita.tratamiento)}</p>
-                <p><strong>Sede:</strong> ${getSedeName(cita.sede)}</p>
-                <button class="btn-delete" data-id="${cita.timestamp}">Eliminar</button>
-            `;
-            listContainer.appendChild(citaElement);
-        });
-
-        // Agregar eventos a botones de eliminar
-        document.querySelectorAll('.btn-delete').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const timestamp = parseInt(this.getAttribute('data-id'));
-                deleteAppointment(timestamp);
+    const form = document.getElementById('appointment-form');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            fetch(form.action, {
+                method: 'POST',
+                body: new FormData(form)
+            })
+            .then(response => {
+                if (response.redirected) {
+                    window.location.href = response.url;
+                } else {
+                    return response.json();
+                }
+            })
+            .then(data => {
+                if (data && data.success) {
+                    cargarCitas();
+                    form.reset();
+                    // Mostrar mensaje de éxito
+                    alert('Cita agendada exitosamente!');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error al agendar cita');
             });
         });
     }
-
-    // Función para eliminar cita
-    function deleteAppointment(timestamp) {
-        let citas = JSON.parse(localStorage.getItem('citas'));
-        citas = citas.filter(cita => cita.timestamp !== timestamp);
-        localStorage.setItem('citas', JSON.stringify(citas));
-        loadAppointments();
-    }
-
-    // Funciones auxiliares
-    function formatDate(dateString) {
-        const options = { year: 'numeric', month: 'long', day: 'numeric' };
-        return new Date(dateString).toLocaleDateString('es-ES', options);
-    }
-
-    function getTreatmentName(code) {
-        const treatments = {
-            'blanqueamiento': 'Blanqueamiento Dental',
-            'ortodoncia': 'Ortodoncia',
-            'limpieza': 'Limpieza Dental',
-            'extraccion': 'Extracción'
-        };
-        return treatments[code] || code;
-    }
-
-    function getSedeName(code) {
-        const sedes = {
-            'bello': 'Bello',
-            'poblado': 'Poblado',
-            'laureles': 'Laureles'
-        };
-        return sedes[code] || code;
-    }
 });
+
+function cargarCitas() {
+    fetch('/obtener_citas')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Error en la respuesta del servidor');
+            }
+            return response.json();
+        })
+        .then(citas => {
+            const lista = document.getElementById('appointments-list');
+            if (!lista) return;
+            
+            lista.innerHTML = '';
+            
+            if (citas.length === 0) {
+                lista.innerHTML = '<p class="no-appointments">No tienes citas programadas</p>';
+                return;
+            }
+            
+            citas.forEach(cita => {
+                const citaElement = document.createElement('div');
+                citaElement.className = 'cita-item';
+                citaElement.innerHTML = `
+                    <div class="cita-header">
+                        <h4>${cita.tratamiento}</h4>
+                        <span class="cita-sede">${cita.sede}</span>
+                    </div>
+                    <div class="cita-body">
+                        <p><strong>Fecha:</strong> ${formatDate(cita.fecha)} a las ${cita.hora}</p>
+                        <p><strong>Paciente:</strong> ${cita.nombres} ${cita.apellidos}</p>
+                        <p><strong>Teléfono:</strong> ${cita.telefono || 'N/A'}</p>
+                    </div>
+                    <button class="btn-cancelar" onclick="cancelarCita(${cita.id})">
+                        Cancelar Cita
+                    </button>
+                `;
+                lista.appendChild(citaElement);
+            });
+        })
+        .catch(error => {
+            console.error('Error al cargar citas:', error);
+            const lista = document.getElementById('appointments-list');
+            if (lista) {
+                lista.innerHTML = '<p class="error-message">Error al cargar las citas. Intenta recargar la página.</p>';
+            }
+        });
+}
+
+function cancelarCita(id) {
+    if (confirm('¿Estás seguro que deseas cancelar esta cita?')) {
+        fetch(`/cancelar_cita/${id}`, { 
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                cargarCitas();
+                alert('Cita cancelada exitosamente');
+            } else {
+                throw new Error('Error al cancelar cita');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error al cancelar la cita');
+        });
+    }
+}
+
+// Función auxiliar para formatear fechas
+function formatDate(dateString) {
+    if (!dateString) return 'Fecha no definida';
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    return new Date(dateString).toLocaleDateString('es-ES', options);
+}

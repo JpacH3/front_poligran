@@ -15,35 +15,35 @@
                 <button type="submit" class="btn-logout">Cerrar Sesión</button>
             </form>
         </header>
-        <form id="appointment-form" class="appointment-form">
+        <form id="appointment-form" class="appointment-form" action="{{ url_for('agendar_cita') }}" method="POST">
             <div class="form-row">
                 <div class="form-group">
                     <label for="nombres">Nombres</label>
-                    <input type="text" id="nombres" placeholder="Nícola" required>
+                    <input type="text" id="nombres" placeholder="Nícola" required name="nombres">
                 </div>
                 
                 <div class="form-group">
                     <label for="apellidos">Apellidos</label>
-                    <input type="text" id="apellidos" placeholder="Rich" required>
+                    <input type="text" id="apellidos" placeholder="Rich" required name="apellidos">
                 </div>
             </div>
 
             <div class="form-row">
                 <div class="form-group">
                     <label for="email">Correo Electrónico</label>
-                    <input type="email" id="email" placeholder="email@gmail.com" required>
+                    <input type="email" id="email" placeholder="email@gmail.com" required name="email">
                 </div>
                 
                 <div class="form-group">
                     <label for="telefono">Teléfono</label>
-                    <input type="tel" id="telefono" placeholder="123-456-789" required>
+                    <input type="tel" id="telefono" placeholder="123-456-789" required name="telefono">
                 </div>
             </div>
 
             <div class="form-row">
                 <div class="form-group">
                     <label for="tratamiento">Tratamiento Dental</label>
-                    <select id="tratamiento" required>
+                    <select id="tratamiento" required name="tratamiento">
                         <option value="">Seleccionar</option>
                         <option value="blanqueamiento">Blanqueamiento Dental</option>
                         <option value="ortodoncia">Ortodoncia</option>
@@ -54,7 +54,7 @@
                 
                 <div class="form-group">
                     <label for="sede">Sede</label>
-                    <select id="sede" required>
+                    <select id="sede" required name="sede">
                         <option value="">Seleccionar</option>
                         <option value="bello">Bello</option>
                         <option value="poblado">Poblado</option>
@@ -66,19 +66,19 @@
             <div class="form-row">
                 <div class="form-group">
                     <label for="fecha">Fecha</label>
-                    <input type="date" id="fecha" required>
+                    <input type="date" id="fecha" required name="fecha">
                 </div>
                 
                 <div class="form-group">
                     <label for="hora">Hora</label>
-                    <input type="time" id="hora" required>
+                    <input type="time" id="hora" required name="hora">
                 </div>
             </div>
 
             <div class="form-row">
                 <div class="form-group">
                     <label for="tipo-paciente">Paciente</label>
-                    <select id="tipo-paciente" required>
+                    <select id="tipo-paciente" required name="tipo-paciente">
                         <option value="adulto">Adulto</option>
                         <option value="nino">Niño</option>
                     </select>
@@ -86,7 +86,7 @@
                 
                 <div class="form-group">
                     <label for="edad">Edad</label>
-                    <input type="number" id="edad" placeholder="36" min="1" max="120" required>
+                    <input type="number" id="edad" placeholder="36" min="1" max="120" required name="edad">
                 </div>
             </div>
             <div class="form-actions">
@@ -97,7 +97,7 @@
         <section class="scheduled-appointments">
             <h3>Citas Programadas</h3>
             <div id="appointments-list" class="appointments-list">
-                <!-- Las citas se cargarán dinámicamente -->
+                <!-- Las citas se cargarán dinámicamente via JavaScript -->
             </div>
         </section>
 
@@ -131,6 +131,6 @@
     </div>
 
     <!-- JavaScript para la funcionalidad -->
-    <script src="js/appointment.js"></script>
+    <script src="{{ url_for('static', filename='js/appointment.js') }}"></script>
 </body>
 </html>

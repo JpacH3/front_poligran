@@ -1,40 +1,26 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, session  # session está importado
-import sqlite3
+from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify
 import os
 from werkzeug.security import generate_password_hash, check_password_hash
+from db import crear_base_de_datos, get_db_connection, validar_usuario, agregar_usuario
 
+# Configuración inicial de la aplicación
 app = Flask(__name__, template_folder='../frontend/templates', static_folder='../frontend/static')
-app.secret_key = 'odonto'  # Clave secreta para sesiones
+app.secret_key = 'odonto'  # Clave secreta para sesiones (deberías usar una clave real en producción)
 
-# Conexión a la base de datos
-def get_db_connection():
-    db_path = os.path.join(os.path.dirname(__file__), 'usuarios.db')
-    conn = sqlite3.connect(db_path)
-    conn.row_factory = sqlite3.Row
-    return conn
+# Verificación e inicialización de la base de datos al iniciar
+print("\n" + "="*50)
+print("🚀 Iniciando aplicación OdontoSmile")
+print("="*50 + "\n")
 
-# Crear la base de datos al iniciar (sin importar desde db.py)
-def crear_base_de_datos():
-    conn = get_db_connection()
-    try:
-        conn.execute('''
-            CREATE TABLE IF NOT EXISTS usuarios (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                nombres TEXT NOT NULL,
-                apellidos TEXT NOT NULL,
-                telefono TEXT,
-                email TEXT NOT NULL UNIQUE,
-                rol TEXT NOT NULL,
-                password TEXT NOT NULL
-            )
-        ''')
-        conn.commit()
-    finally:
-        conn.close()
+# Forzar la creación de la base de datos al inicio
+try:
+    crear_base_de_datos()
+    print("✅ Base de datos verificada y lista para usar\n")
+except Exception as e:
+    print(f"❌ Error crítico al inicializar la base de datos: {str(e)}")
+    raise
 
-crear_base_de_datos()  # Llama a la función local, no a la de db.py
-
-# Rutas
+# Rutas de la aplicación
 @app.route('/')
 def home():
     return render_template('index.html')
@@ -46,23 +32,26 @@ def login():
         password = request.form.get('password')
         remember = True if request.form.get('remember') else False
 
-        conn = get_db_connection()
-        user = conn.execute('SELECT * FROM usuarios WHERE email = ?', (email,)).fetchone()
-        conn.close()
+        try:
+            user = validar_usuario(email, password)
+            if not user:
+                flash('Correo electrónico o contraseña incorrectos', 'error')
+                return redirect(url_for('login'))
 
-        if not user or not check_password_hash(user['password'], password):
-            flash('Correo electrónico o contraseña incorrectos', 'error')
+            # Configurar sesión
+            session['user_id'] = user['id']
+            session['user_email'] = user['email']
+            session['user_role'] = user['rol']
+            
+            if remember:
+                session.permanent = True
+            
+            flash('Has iniciado sesión correctamente', 'success')
+            return redirect(url_for('appointment'))
+
+        except Exception as e:
+            flash(f'Error al iniciar sesión: {str(e)}', 'error')
             return redirect(url_for('login'))
-
-        # Iniciar sesión (session está importado)
-        session['user_id'] = user['id']
-        session['user_email'] = user['email']
-        
-        if remember:
-            session.permanent = True
-        
-        flash('Has iniciado sesión correctamente', 'success')
-        return redirect(url_for('appointment'))
 
     return render_template('login.html')
 
@@ -70,88 +59,132 @@ def login():
 def register():
     if request.method == 'POST':
         try:
-            print("\n--- DATOS RECIBIDOS ---")
-            print("Nombres:", request.form.get('nombres'))
-            print("Email:", request.form.get('email'))
-            print("Rol:", request.form.get('rol'))
             # Obtener datos del formulario
-            nombres = request.form.get('nombres')
-            apellidos = request.form.get('apellidos')
-            telefono = request.form.get('telefono')
-            email = request.form.get('email')
-            rol = request.form.get('rol')
-            password = request.form.get('password')
-            confirm_password = request.form.get('confirm-password')
-            age_verification = request.form.get('age-verification')
+            data = {
+                'nombres': request.form.get('nombres'),
+                'apellidos': request.form.get('apellidos'),
+                'telefono': request.form.get('telefono'),
+                'email': request.form.get('email'),
+                'rol': request.form.get('rol'),
+                'password': request.form.get('password'),
+                'confirm_password': request.form.get('confirm-password'),
+                'age_verification': request.form.get('age-verification')
+            }
 
             # Validaciones
-            if not all([nombres, apellidos, email, rol, password, confirm_password]):
-                flash('Todos los campos son obligatorios')
+            if not all(data.values()):
+                flash('Todos los campos son obligatorios', 'error')
                 return redirect(url_for('register'))
                 
-            if password != confirm_password:
-                flash('Las contraseñas no coinciden')
+            if data['password'] != data['confirm_password']:
+                flash('Las contraseñas no coinciden', 'error')
                 return redirect(url_for('register'))
                 
-            if len(password) < 6:
-                flash('La contraseña debe tener al menos 6 caracteres')
+            if len(data['password']) < 6:
+                flash('La contraseña debe tener al menos 6 caracteres', 'error')
                 return redirect(url_for('register'))
                 
-            if not age_verification:
-                flash('Debes aceptar que eres mayor de 18 años')
+            if not data['age_verification']:
+                flash('Debes aceptar que eres mayor de 18 años', 'error')
                 return redirect(url_for('register'))
 
-            # Conexión a la base de datos
-            conn = get_db_connection()
-            cursor = conn.cursor()
-            
-            # Verificar si el email ya existe
-            cursor.execute('SELECT id FROM usuarios WHERE email = ?', (email,))
-            if cursor.fetchone():
-                flash('Este correo electrónico ya está registrado')
-                conn.close()
-                return redirect(url_for('register'))
-            
-            # Hash de la contraseña
-            hashed_password = generate_password_hash(password)
-            
-            # Insertar nuevo usuario
-            cursor.execute('''
-                INSERT INTO usuarios (nombres, apellidos, telefono, email, rol, password)
-                VALUES (?, ?, ?, ?, ?, ?)
-            ''', (nombres, apellidos, telefono, email, rol, hashed_password))
-            
-            conn.commit()
-            conn.close()
+            # Registrar usuario
+            agregar_usuario(
+                data['nombres'],
+                data['apellidos'],
+                data['telefono'],
+                data['email'],
+                data['rol'],
+                data['password']
+            )
             
             flash('¡Registro exitoso! Ahora puedes iniciar sesión', 'success')
             return redirect(url_for('login'))
             
-        except sqlite3.IntegrityError as e:
-            flash('Error: El correo electrónico ya está registrado', 'error')
-            if 'conn' in locals():
-                conn.close()
+        except ValueError as e:
+            flash(str(e), 'error')
             return redirect(url_for('register'))
         except Exception as e:
             flash(f'Error al registrar: {str(e)}', 'error')
-            if 'conn' in locals():
-                conn.close()
             return redirect(url_for('register'))
     
     return render_template('register.html')
+
 @app.route('/logout', methods=['POST'])
 def logout():
-    # Elimina los datos de la sesión
     session.clear()
     flash('Has cerrado sesión correctamente', 'success')
-    return render_template('login.html') # Redirige a la página de inicio
+    return redirect(url_for('login'))
 
 @app.route('/appointment')
 def appointment():
-    if 'user_id' not in session:  # Protege la ruta
+    if 'user_id' not in session:
         flash('Debes iniciar sesión para acceder', 'error')
         return redirect(url_for('login'))
     return render_template('appointment.html')
 
+@app.route('/agendar_cita', methods=['POST'])
+def agendar_cita():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    
+    try:
+        data = request.form
+        
+        conn = get_db_connection()
+        conn.execute('''
+            INSERT INTO citas (
+                user_id, nombres, apellidos, email, telefono,
+                tratamiento, sede, fecha, hora, tipo_paciente, edad
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ''', (
+            session['user_id'],
+            data['nombres'],
+            data['apellidos'],
+            data['email'],
+            data['telefono'],
+            data['tratamiento'],
+            data['sede'],
+            data['fecha'],
+            data['hora'],
+            data['tipo-paciente'],
+            data['edad']
+        ))
+        conn.commit()
+        conn.close()
+        
+        flash('Cita agendada exitosamente', 'success')
+        return redirect(url_for('appointment'))
+    
+    except Exception as e:
+        flash(f'Error al agendar cita: {str(e)}', 'error')
+        return redirect(url_for('appointment'))
+
+@app.route('/obtener_citas')
+def obtener_citas():
+    if 'user_id' not in session:
+        return jsonify([])
+    
+    try:
+        conn = get_db_connection()
+        citas = conn.execute('''
+            SELECT * FROM citas 
+            WHERE user_id = ?
+            ORDER BY fecha, hora
+        ''', (session['user_id'],)).fetchall()
+        
+        citas_list = [dict(cita) for cita in citas]
+        return jsonify(citas_list)
+        
+    except Exception as e:
+        print(f"Error al obtener citas: {str(e)}")
+        return jsonify([])
+    finally:
+        if 'conn' in locals():
+            conn.close()
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    # Configuración adicional para desarrollo
+    app.config['TEMPLATES_AUTO_RELOAD'] = True
+    app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
+    app.run(debug=True, host='0.0.0.0', port=5000)
