@@ -2,13 +2,13 @@ services:
   - type: web
     name: odonto-smile
     runtime: python
-    rootDirectory: adonto_smile/backend  # ¡Clave para resolver rutas!
+    rootDirectory: odonto_smile
     buildCommand: |
-      pip install -r requirements.txt
+      pip install -r backend/requirements.txt
     startCommand: |
-      gunicorn app:app
+      gunicorn backend.app:app
     envVars:
       - key: SECRET_KEY
         value: tu_clave_secreta_compleja
       - key: DATABASE_URL
-        value: sqlite:///usuarios.db  # Ruta relativa al directorio backend
+        value: sqlite:///backend/usuarios.db
