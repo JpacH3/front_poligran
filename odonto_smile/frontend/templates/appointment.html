@@ -4,15 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OdontoSmile - Agendar Cita</title>
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
     <div class="appointment-container">
         <header class="appointment-header">
             <h1>OdontoSmile</h1>
             <h2>Agendar Citas</h2>
+            <form action="{{ url_for('logout') }}" method="POST" class="logout-form">
+                <button type="submit" class="btn-logout">Cerrar Sesión</button>
+            </form>
         </header>
-
         <form id="appointment-form" class="appointment-form">
             <div class="form-row">
                 <div class="form-group">
@@ -87,10 +89,8 @@
                     <input type="number" id="edad" placeholder="36" min="1" max="120" required>
                 </div>
             </div>
-
             <div class="form-actions">
                 <button type="submit" class="btn-submit">Agendar Cita</button>
-                <button type="button" id="logout-btn" class="btn-logout">Cerrar Sesión</button>
             </div>
         </form>
 

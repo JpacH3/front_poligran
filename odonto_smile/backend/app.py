@@ -1,10 +1,10 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, session  # session está importado
 import sqlite3
 import os
 from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__, template_folder='../frontend/templates', static_folder='../frontend/static')
-app.secret_key = 'odonto'  # Puedes cambiarla por seguridad
+app.secret_key = 'odonto'  # Clave secreta para sesiones
 
 # Conexión a la base de datos
 def get_db_connection():
@@ -12,6 +12,27 @@ def get_db_connection():
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
     return conn
+
+# Crear la base de datos al iniciar (sin importar desde db.py)
+def crear_base_de_datos():
+    conn = get_db_connection()
+    try:
+        conn.execute('''
+            CREATE TABLE IF NOT EXISTS usuarios (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                nombres TEXT NOT NULL,
+                apellidos TEXT NOT NULL,
+                telefono TEXT,
+                email TEXT NOT NULL UNIQUE,
+                rol TEXT NOT NULL,
+                password TEXT NOT NULL
+            )
+        ''')
+        conn.commit()
+    finally:
+        conn.close()
+
+crear_base_de_datos()  # Llama a la función local, no a la de db.py
 
 # Rutas
 @app.route('/')
@@ -21,18 +42,27 @@ def home():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        usuario = request.form.get['usuario']
-        password = request.form.get['password']
+        email = request.form.get('email')
+        password = request.form.get('password')
+        remember = True if request.form.get('remember') else False
 
         conn = get_db_connection()
-        user = conn.execute('SELECT * FROM usuarios WHERE email = ? AND password = ?', (usuario, password)).fetchone()
+        user = conn.execute('SELECT * FROM usuarios WHERE email = ?', (email,)).fetchone()
         conn.close()
 
-        if user:
-            return redirect(url_for('appointment'))
-        else:
-            flash('Usuario o contraseña incorrectos')
+        if not user or not check_password_hash(user['password'], password):
+            flash('Correo electrónico o contraseña incorrectos', 'error')
             return redirect(url_for('login'))
+
+        # Iniciar sesión (session está importado)
+        session['user_id'] = user['id']
+        session['user_email'] = user['email']
+        
+        if remember:
+            session.permanent = True
+        
+        flash('Has iniciado sesión correctamente', 'success')
+        return redirect(url_for('appointment'))
 
     return render_template('login.html')
 
@@ -40,6 +70,10 @@ def login():
 def register():
     if request.method == 'POST':
         try:
+            print("\n--- DATOS RECIBIDOS ---")
+            print("Nombres:", request.form.get('nombres'))
+            print("Email:", request.form.get('email'))
+            print("Rol:", request.form.get('rol'))
             # Obtener datos del formulario
             nombres = request.form.get('nombres')
             apellidos = request.form.get('apellidos')
@@ -105,9 +139,18 @@ def register():
             return redirect(url_for('register'))
     
     return render_template('register.html')
+@app.route('/logout', methods=['POST'])
+def logout():
+    # Elimina los datos de la sesión
+    session.clear()
+    flash('Has cerrado sesión correctamente', 'success')
+    return render_template('login.html') # Redirige a la página de inicio
 
 @app.route('/appointment')
 def appointment():
+    if 'user_id' not in session:  # Protege la ruta
+        flash('Debes iniciar sesión para acceder', 'error')
+        return redirect(url_for('login'))
     return render_template('appointment.html')
 
 if __name__ == '__main__':
