@@ -2,11 +2,11 @@ services:
   - type: web
     name: odonto-smile
     runtime: python
-    rootDirectory: odonto_smile
+    rootDirectory: odonto_smile/backend
     buildCommand: |
-      pip install -r backend/requirements.txt
+      pip install -r requirements.txt
     startCommand: |
-      gunicorn backend.app:app
+      ggunicorn app:app
     envVars:
       - key: SECRET_KEY
         value: tu_clave_secreta_compleja
