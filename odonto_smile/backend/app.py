@@ -186,6 +186,10 @@ def obtener_citas():
         if 'conn' in locals():
             conn.close()
 
+@app.route('/error')
+def error():
+    return render_template('error.html', status=404)
+
 if __name__ == '__main__':
     # Configuración adicional para desarrollo
     app.config['TEMPLATES_AUTO_RELOAD'] = True
