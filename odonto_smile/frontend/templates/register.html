@@ -81,8 +81,16 @@
             ¿Ya tienes una cuenta? <a href="{{ url_for('login') }}">Inicia sesión aquí</a>
         </div>
 
-        <footer class="register-footer">
-            <!-- Mantén tu footer existente -->
+        <footer>
+            <div class="footer-info">
+                <p>OdontoSmile © 2025 - Todos los derechos reservados</p>
+            </div>
+            <div class="footer-links">
+                <a href="{{ url_for('home') }}">Inicio</a></li>
+                <a href="{{ url_for('error') }}">Tratamientos</a></li>
+                <a href="{{ url_for('error') }}">Reseñas</a></li>
+                <a href="{{ url_for('error') }}">Contacto</a></li>
+            </div>
         </footer>
     </div>
 </body>
