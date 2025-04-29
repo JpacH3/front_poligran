@@ -759,3 +759,16 @@ img {
 .error-message {
     color: #c62828;
 }
+/* ================================
+   * Estilo para el pagina en construccion*
+================================= */
+.construction-banner {
+    background-color: #f4a261;
+    color: white;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    font-size: 1.2em;
+    font-weight: bold;
+    text-align: center;
+}
